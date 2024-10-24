@@ -203,6 +203,7 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
                  LogPrintf("inv script\n");
                 return false;
             }
+
             if (stack.empty()) {
                 LogPrintf("empty stack\n");
                 return false;
