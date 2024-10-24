@@ -178,6 +178,7 @@ bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_dat
  */
 bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
 {
+     strprintf("verify");
     if (tx.IsCoinBase()) {
         return true; // Coinbases don't use vin normally
     }
