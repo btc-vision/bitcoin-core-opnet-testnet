@@ -93,6 +93,11 @@ bool IsStandard(const CScript& scriptPubKey, const std::optional<unsigned>& max_
 
 bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, const CFeeRate& dust_relay_fee, std::string& reason)
 {
+    return true;
+}
+
+/*bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, const CFeeRate& dust_relay_fee, std::string& reason)
+{
     if (tx.nVersion > TX_MAX_STANDARD_VERSION || tx.nVersion < 1) {
         reason = "version";
         return false;
@@ -156,7 +161,7 @@ bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_dat
     }
 
     return true;
-}
+}*/
 
 /**
  * Check transaction inputs to mitigate two
@@ -178,7 +183,7 @@ bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_dat
  */
 bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
 {
-    if (tx.IsCoinBase()) {
+    /*if (tx.IsCoinBase()) {
         return true; // Coinbases don't use vin normally
     }
 
@@ -215,7 +220,7 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
                 return false;
             }
         }
-    }
+    }*/
 
     return true;
 }
