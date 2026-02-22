@@ -541,11 +541,9 @@ public:
         vSeeds.clear();
 
         if (!options.challenge) {
-            // TODO: Replace with the actual OPNet signing pubkey once available.
-            // This is a placeholder OP_TRUE challenge for initial development.
-            // To use a real key: bin = "<hex-encoded-challenge-script>"_hex_v_u8;
-            bin = {OP_TRUE};
-            LogInfo("OPNet Testnet with default (OP_TRUE) challenge");
+            // Default challenge: PUSH33 <compressed_pubkey> OP_CHECKSIG
+            bin = "21036ff891bb731452f59af9179598e7379c56fd96da1329295daef792b0da04f87bac"_hex_v_u8;
+            LogInfo("OPNet Testnet with default challenge");
         } else {
             bin = *options.challenge;
             LogInfo("OPNet Testnet with challenge %s", HexStr(bin));
@@ -607,15 +605,10 @@ public:
         nDefaultPort = 48337;
         nPruneAfterHeight = 1000;
 
-        // TODO: Mine genesis block. Run with -opnet-testnet once with a temporary
-        // grinding loop enabled, capture the output, hardcode hash and nonce here,
-        // then remove the grinding loop.
-        // For now, using a unique timestamp and nTime. The nonce and hash assertions
-        // are commented out until the genesis is mined on target infrastructure.
-        genesis = CreateGenesisBlock(1740000000, 0, 0x1e0377ae, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1740000000, 6737128, 0x1e0377ae, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        // genesis.nNonce = ???;
-        // assert(consensus.hashGenesisBlock == uint256{"???"});
+        assert(consensus.hashGenesisBlock == uint256{"0000012abdc31bae92b788839921edd2e53b6b340dad3f69ae14f63e963dd3c0"});
+        assert(genesis.hashMerkleRoot == uint256{"4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"});
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
