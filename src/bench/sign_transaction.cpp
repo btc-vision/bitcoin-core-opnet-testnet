@@ -1,4 +1,4 @@
-// Copyright (c) 2023 The Bitcoin Core developers
+// Copyright (c) 2023-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -62,7 +62,7 @@ static void SignTransactionSingleInput(benchmark::Bench& bench, InputType input_
     bench.minEpochIterations(100).run([&] {
         CMutableTransaction tx{unsigned_tx};
         std::map<COutPoint, Coin> coins;
-        CScript prev_spk = prev_spks[(iter++) % prev_spks.size()];
+        const CScript& prev_spk = prev_spks[(iter++) % prev_spks.size()];
         coins[prevout] = Coin(CTxOut(10000, prev_spk), /*nHeightIn=*/100, /*fCoinBaseIn=*/false);
         std::map<int, bilingual_str> input_errors;
         bool complete = SignTransaction(tx, &keystore, coins, SIGHASH_ALL, input_errors);
@@ -100,7 +100,7 @@ static void SignSchnorrWithNullMerkleRoot(benchmark::Bench& bench)
     SignSchnorrTapTweakBenchmark(bench, /*use_null_merkle_root=*/true);
 }
 
-BENCHMARK(SignTransactionECDSA, benchmark::PriorityLevel::HIGH);
-BENCHMARK(SignTransactionSchnorr, benchmark::PriorityLevel::HIGH);
-BENCHMARK(SignSchnorrWithMerkleRoot, benchmark::PriorityLevel::HIGH);
-BENCHMARK(SignSchnorrWithNullMerkleRoot, benchmark::PriorityLevel::HIGH);
+BENCHMARK(SignTransactionECDSA);
+BENCHMARK(SignTransactionSchnorr);
+BENCHMARK(SignSchnorrWithMerkleRoot);
+BENCHMARK(SignSchnorrWithNullMerkleRoot);

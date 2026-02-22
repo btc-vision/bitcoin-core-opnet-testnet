@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2024 The Bitcoin Core developers
+# Copyright (c) 2024-present The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test support for XORed block data and undo files (`-blocksxor` option)."""
@@ -23,7 +23,6 @@ class BlocksXORTest(BitcoinTestFramework):
         self.extra_args = [[
             '-blocksxor=1',
             '-fastprune=1',             # use smaller block files
-            '-datacarriersize=100000',  # needed to pad transaction with MiniWallet
         ]]
 
     def run_test(self):
@@ -31,7 +30,7 @@ class BlocksXORTest(BitcoinTestFramework):
         node = self.nodes[0]
         wallet = MiniWallet(node)
         for _ in range(5):
-            wallet.send_self_transfer(from_node=node, target_weight=80000)
+            wallet.send_self_transfer(from_node=node, target_vsize=20000)
             self.generate(wallet, 1)
 
         block_files = list(node.blocks_path.glob('blk[0-9][0-9][0-9][0-9][0-9].dat'))

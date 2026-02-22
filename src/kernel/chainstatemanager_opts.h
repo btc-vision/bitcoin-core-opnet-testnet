@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Bitcoin Core developers
+// Copyright (c) 2022-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -21,7 +21,6 @@
 class CChainParams;
 class ValidationSignals;
 
-static constexpr bool DEFAULT_CHECKPOINTS_ENABLED{true};
 static constexpr auto DEFAULT_MAX_TIP_AGE{24h};
 
 namespace kernel {
@@ -35,14 +34,12 @@ struct ChainstateManagerOpts {
     const CChainParams& chainparams;
     fs::path datadir;
     std::optional<int32_t> check_block_index{};
-    bool checkpoints_enabled{DEFAULT_CHECKPOINTS_ENABLED};
     //! If set, it will override the minimum work we will assume exists on some valid chain.
     std::optional<arith_uint256> minimum_chain_work{};
     //! If set, it will override the block hash whose ancestors we will assume to have valid scripts without checking them.
     std::optional<uint256> assumed_valid_block{};
     //! If the tip is older than this, the node is considered to be in initial block download.
     std::chrono::seconds max_tip_age{DEFAULT_MAX_TIP_AGE};
-    DBOptions block_tree_db{};
     DBOptions coins_db{};
     CoinsViewOptions coins_view{};
     Notifications& notifications;

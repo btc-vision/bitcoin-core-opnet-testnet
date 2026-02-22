@@ -19,8 +19,6 @@ SECP256K1_INLINE static int secp256k1_scalar_is_even(const secp256k1_scalar *a) 
     return !(*a & 1);
 }
 
-SECP256K1_INLINE static void secp256k1_scalar_clear(secp256k1_scalar *r) { *r = 0; }
-
 SECP256K1_INLINE static void secp256k1_scalar_set_int(secp256k1_scalar *r, unsigned int v) {
     *r = v % EXHAUSTIVE_TEST_ORDER;
 
@@ -58,6 +56,7 @@ static int secp256k1_scalar_add(secp256k1_scalar *r, const secp256k1_scalar *a, 
 
 static void secp256k1_scalar_cadd_bit(secp256k1_scalar *r, unsigned int bit, int flag) {
     SECP256K1_SCALAR_VERIFY(r);
+    VERIFY_CHECK(flag == 0 || flag == 1);
 
     if (flag && bit < 32)
         *r += ((uint32_t)1 << bit);
@@ -123,6 +122,7 @@ static int secp256k1_scalar_is_high(const secp256k1_scalar *a) {
 
 static int secp256k1_scalar_cond_negate(secp256k1_scalar *r, int flag) {
     SECP256K1_SCALAR_VERIFY(r);
+    VERIFY_CHECK(flag == 0 || flag == 1);
 
     if (flag) secp256k1_scalar_negate(r, r);
 
@@ -159,6 +159,7 @@ SECP256K1_INLINE static int secp256k1_scalar_eq(const secp256k1_scalar *a, const
 static SECP256K1_INLINE void secp256k1_scalar_cmov(secp256k1_scalar *r, const secp256k1_scalar *a, int flag) {
     uint32_t mask0, mask1;
     volatile int vflag = flag;
+    VERIFY_CHECK(flag == 0 || flag == 1);
     SECP256K1_SCALAR_VERIFY(a);
     SECP256K1_CHECKMEM_CHECK_VERIFY(r, sizeof(*r));
 

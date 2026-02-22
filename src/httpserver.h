@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2022 The Bitcoin Core developers
+// Copyright (c) 2015-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -14,8 +14,17 @@ namespace util {
 class SignalInterrupt;
 } // namespace util
 
-static const int DEFAULT_HTTP_THREADS=4;
-static const int DEFAULT_HTTP_WORKQUEUE=16;
+/**
+ * The default value for `-rpcthreads`. This number of threads will be created at startup.
+ */
+static const int DEFAULT_HTTP_THREADS=16;
+
+/**
+ * The default value for `-rpcworkqueue`. This is the maximum depth of the work queue,
+ * we don't allocate this number of work queue items upfront.
+ */
+static const int DEFAULT_HTTP_WORKQUEUE=64;
+
 static const int DEFAULT_HTTP_SERVER_TIMEOUT=30;
 
 struct evhttp_request;
@@ -149,15 +158,6 @@ public:
  * @param[in] key represents the query parameter of which the value is returned
  */
 std::optional<std::string> GetQueryParameterFromUri(const char* uri, const std::string& key);
-
-/** Event handler closure.
- */
-class HTTPClosure
-{
-public:
-    virtual void operator()() = 0;
-    virtual ~HTTPClosure() = default;
-};
 
 /** Event class. This can be used either as a cross-thread trigger or as a timer.
  */

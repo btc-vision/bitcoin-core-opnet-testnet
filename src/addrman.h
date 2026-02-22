@@ -1,5 +1,5 @@
 // Copyright (c) 2012 Pieter Wuille
-// Copyright (c) 2012-2022 The Bitcoin Core developers
+// Copyright (c) 2012-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -166,13 +166,13 @@ public:
      * Return all or many randomly selected addresses, optionally by network.
      *
      * @param[in] max_addresses  Maximum number of addresses to return (0 = all).
-     * @param[in] max_pct        Maximum percentage of addresses to return (0 = all).
+     * @param[in] max_pct        Maximum percentage of addresses to return (0 = all). Value must be from 0 to 100.
      * @param[in] network        Select only addresses of this network (nullopt = all).
      * @param[in] filtered       Select only addresses that are considered good quality (false = all).
      *
      * @return                   A vector of randomly selected addresses from vRandom.
      */
-    std::vector<CAddress> GetAddr(size_t max_addresses, size_t max_pct, std::optional<Network> network, const bool filtered = true) const;
+    std::vector<CAddress> GetAddr(size_t max_addresses, size_t max_pct, std::optional<Network> network, bool filtered = true) const;
 
     /**
      * Returns an information-location pair for all addresses in the selected addrman table.

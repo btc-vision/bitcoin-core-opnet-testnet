@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2022 The Bitcoin Core developers
+// Copyright (c) 2016-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -45,25 +45,44 @@ struct TestBlockAndIndex {
 
 } // namespace
 
-static void BlockToJsonVerbose(benchmark::Bench& bench)
+static void BlockToJson(benchmark::Bench& bench, TxVerbosity verbosity)
 {
     TestBlockAndIndex data;
+    const uint256 pow_limit{data.testing_setup->m_node.chainman->GetParams().GetConsensus().powLimit};
     bench.run([&] {
-        auto univalue = blockToJSON(data.testing_setup->m_node.chainman->m_blockman, data.block, data.blockindex, data.blockindex, TxVerbosity::SHOW_DETAILS_AND_PREVOUT);
+        auto univalue = blockToJSON(data.testing_setup->m_node.chainman->m_blockman, data.block, data.blockindex, data.blockindex, verbosity, pow_limit);
         ankerl::nanobench::doNotOptimizeAway(univalue);
     });
 }
 
-BENCHMARK(BlockToJsonVerbose, benchmark::PriorityLevel::HIGH);
+static void BlockToJsonVerbosity1(benchmark::Bench& bench)
+{
+    BlockToJson(bench, TxVerbosity::SHOW_TXID);
+}
+
+static void BlockToJsonVerbosity2(benchmark::Bench& bench)
+{
+    BlockToJson(bench, TxVerbosity::SHOW_DETAILS);
+}
+
+static void BlockToJsonVerbosity3(benchmark::Bench& bench)
+{
+    BlockToJson(bench, TxVerbosity::SHOW_DETAILS_AND_PREVOUT);
+}
+
+BENCHMARK(BlockToJsonVerbosity1);
+BENCHMARK(BlockToJsonVerbosity2);
+BENCHMARK(BlockToJsonVerbosity3);
 
 static void BlockToJsonVerboseWrite(benchmark::Bench& bench)
 {
     TestBlockAndIndex data;
-    auto univalue = blockToJSON(data.testing_setup->m_node.chainman->m_blockman, data.block, data.blockindex, data.blockindex, TxVerbosity::SHOW_DETAILS_AND_PREVOUT);
+    const uint256 pow_limit{data.testing_setup->m_node.chainman->GetParams().GetConsensus().powLimit};
+    auto univalue = blockToJSON(data.testing_setup->m_node.chainman->m_blockman, data.block, data.blockindex, data.blockindex, TxVerbosity::SHOW_DETAILS_AND_PREVOUT, pow_limit);
     bench.run([&] {
         auto str = univalue.write();
         ankerl::nanobench::doNotOptimizeAway(str);
     });
 }
 
-BENCHMARK(BlockToJsonVerboseWrite, benchmark::PriorityLevel::HIGH);
+BENCHMARK(BlockToJsonVerboseWrite);

@@ -19,6 +19,7 @@ add_executable(fuzz
   block.cpp
   block_header.cpp
   block_index.cpp
+  block_index_tree.cpp
   blockfilter.cpp
   bloom_filter.cpp
   buffered_file.cpp
@@ -41,6 +42,7 @@ add_executable(fuzz
   decode_tx.cpp
   descriptor_parse.cpp
   deserialize.cpp
+  difference_formatter.cpp
   eval_script.cpp
   feefrac.cpp
   fee_rate.cpp
@@ -59,6 +61,7 @@ add_executable(fuzz
   kitchen_sink.cpp
   load_external_block_file.cpp
   locale.cpp
+  merkle.cpp
   merkleblock.cpp
   message.cpp
   miniscript.cpp
@@ -71,11 +74,14 @@ add_executable(fuzz
   netaddress.cpp
   netbase_dns_lookup.cpp
   node_eviction.cpp
+  overflow.cpp
   p2p_handshake.cpp
   p2p_headers_presync.cpp
   p2p_transport_serialization.cpp
+  pcp.cpp
   package_eval.cpp
   parse_hd_keypath.cpp
+  parse_iso8601.cpp
   parse_numbers.cpp
   parse_script.cpp
   parse_univalue.cpp
@@ -114,12 +120,15 @@ add_executable(fuzz
   string.cpp
   strprintf.cpp
   system.cpp
+  threadpool.cpp
   timeoffsets.cpp
   torcontrol.cpp
   transaction.cpp
+  txdownloadman.cpp
   tx_in.cpp
   tx_out.cpp
   tx_pool.cpp
+  txgraph.cpp
   txorphan.cpp
   txrequest.cpp
   utxo_snapshot.cpp
@@ -128,8 +137,12 @@ add_executable(fuzz
   vecdeque.cpp
   versionbits.cpp
 )
+
+add_windows_application_manifest(fuzz)
+
 target_link_libraries(fuzz
   core_interface
+  fuzzer_interface
   test_fuzz
   bitcoin_cli
   bitcoin_common
@@ -139,7 +152,7 @@ target_link_libraries(fuzz
   univalue
   secp256k1
   Boost::headers
-  $<TARGET_NAME_IF_EXISTS:libevent::libevent>
+  libevent::extra
 )
 
 if(ENABLE_WALLET)
