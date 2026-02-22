@@ -159,6 +159,7 @@ std::list<SectionInfo> ArgsManager::GetUnrecognizedSections() const
         ChainTypeToString(ChainType::SIGNET),
         ChainTypeToString(ChainType::TESTNET),
         ChainTypeToString(ChainType::TESTNET4),
+        ChainTypeToString(ChainType::OPNET_TESTNET),
         ChainTypeToString(ChainType::MAIN),
     };
 
@@ -834,10 +835,11 @@ std::variant<ChainType, std::string> ArgsManager::GetChainArg() const
     const bool fSigNet  = get_net("-signet");
     const bool fTestNet = get_net("-testnet");
     const bool fTestNet4 = get_net("-testnet4");
+    const bool fOpnetTestnet = get_net("-opnet-testnet");
     const auto chain_arg = GetArg("-chain");
 
-    if ((int)chain_arg.has_value() + (int)fRegTest + (int)fSigNet + (int)fTestNet + (int)fTestNet4 > 1) {
-        throw std::runtime_error("Invalid combination of -regtest, -signet, -testnet, -testnet4 and -chain. Can use at most one.");
+    if ((int)chain_arg.has_value() + (int)fRegTest + (int)fSigNet + (int)fTestNet + (int)fTestNet4 + (int)fOpnetTestnet > 1) {
+        throw std::runtime_error("Invalid combination of -regtest, -signet, -testnet, -testnet4, -opnet-testnet and -chain. Can use at most one.");
     }
     if (chain_arg) {
         if (auto parsed = ChainTypeFromString(*chain_arg)) return *parsed;
@@ -848,6 +850,7 @@ std::variant<ChainType, std::string> ArgsManager::GetChainArg() const
     if (fSigNet) return ChainType::SIGNET;
     if (fTestNet) return ChainType::TESTNET;
     if (fTestNet4) return ChainType::TESTNET4;
+    if (fOpnetTestnet) return ChainType::OPNET_TESTNET;
     return ChainType::MAIN;
 }
 

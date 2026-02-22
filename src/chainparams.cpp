@@ -41,6 +41,24 @@ void ReadSigNetArgs(const ArgsManager& args, CChainParams::SigNetOptions& option
     }
 }
 
+void ReadOpnetTestnetArgs(const ArgsManager& args, CChainParams::OpnetTestnetOptions& options)
+{
+    if (!args.GetArgs("-opnetseednode").empty()) {
+        options.seeds.emplace(args.GetArgs("-opnetseednode"));
+    }
+    if (!args.GetArgs("-opnetchallenge").empty()) {
+        const auto opnet_challenge = args.GetArgs("-opnetchallenge");
+        if (opnet_challenge.size() != 1) {
+            throw std::runtime_error("-opnetchallenge cannot be multiple values.");
+        }
+        const auto val{TryParseHex<uint8_t>(opnet_challenge[0])};
+        if (!val) {
+            throw std::runtime_error(strprintf("-opnetchallenge must be hex, not '%s'.", opnet_challenge[0]));
+        }
+        options.challenge.emplace(*val);
+    }
+}
+
 void ReadRegTestArgs(const ArgsManager& args, CChainParams::RegTestOptions& options)
 {
     if (auto value = args.GetBoolArg("-fastprune")) options.fastprune = *value;
@@ -127,6 +145,11 @@ std::unique_ptr<const CChainParams> CreateChainParams(const ArgsManager& args, c
         auto opts = CChainParams::SigNetOptions{};
         ReadSigNetArgs(args, opts);
         return CChainParams::SigNet(opts);
+    }
+    case ChainType::OPNET_TESTNET: {
+        auto opts = CChainParams::OpnetTestnetOptions{};
+        ReadOpnetTestnetArgs(args, opts);
+        return CChainParams::OpnetTestnet(opts);
     }
     case ChainType::REGTEST: {
         auto opts = CChainParams::RegTestOptions{};

@@ -467,11 +467,13 @@ void SetupServerArgs(ArgsManager& argsman, bool can_listen_ipc)
     const auto testnetBaseParams = CreateBaseChainParams(ChainType::TESTNET);
     const auto testnet4BaseParams = CreateBaseChainParams(ChainType::TESTNET4);
     const auto signetBaseParams = CreateBaseChainParams(ChainType::SIGNET);
+    const auto opnetTestnetBaseParams = CreateBaseChainParams(ChainType::OPNET_TESTNET);
     const auto regtestBaseParams = CreateBaseChainParams(ChainType::REGTEST);
     const auto defaultChainParams = CreateChainParams(argsman, ChainType::MAIN);
     const auto testnetChainParams = CreateChainParams(argsman, ChainType::TESTNET);
     const auto testnet4ChainParams = CreateChainParams(argsman, ChainType::TESTNET4);
     const auto signetChainParams = CreateChainParams(argsman, ChainType::SIGNET);
+    const auto opnetTestnetChainParams = CreateChainParams(argsman, ChainType::OPNET_TESTNET);
     const auto regtestChainParams = CreateChainParams(argsman, ChainType::REGTEST);
 
     // Hidden Options
@@ -938,7 +940,7 @@ bool AppInitParameterInteraction(const ArgsManager& args)
     // specified in default section of config file, but not overridden
     // on the command line or in this chain's section of the config file.
     ChainType chain = args.GetChainType();
-    if (chain == ChainType::SIGNET) {
+    if (chainparams.IsSignetLike()) {
         LogInfo("Signet derived magic (message start): %s", HexStr(chainparams.MessageStart()));
     }
     bilingual_str errors;

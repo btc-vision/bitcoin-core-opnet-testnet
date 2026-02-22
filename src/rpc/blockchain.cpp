@@ -1433,7 +1433,7 @@ RPCHelpMan getblockchaininfo()
             obj.pushKV("prune_target_size", chainman.m_blockman.GetPruneTarget());
         }
     }
-    if (chainman.GetParams().GetChainType() == ChainType::SIGNET) {
+    if (chainman.GetParams().IsSignetLike()) {
         const std::vector<uint8_t>& signet_challenge =
             chainman.GetParams().GetConsensus().signet_challenge;
         obj.pushKV("signet_challenge", HexStr(signet_challenge));

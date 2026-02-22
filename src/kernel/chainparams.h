@@ -98,6 +98,8 @@ public:
     bool IsTestChain() const { return m_chain_type != ChainType::MAIN; }
     /** If this chain allows time to be mocked */
     bool IsMockableChain() const { return m_is_mockable_chain; }
+    /** If this chain uses signet-style (BIP325) block validation */
+    bool IsSignetLike() const { return m_chain_type == ChainType::SIGNET || m_chain_type == ChainType::OPNET_TESTNET; }
     uint64_t PruneAfterHeight() const { return nPruneAfterHeight; }
     /** Minimum free space (in GB) needed for data directory */
     uint64_t AssumedBlockchainSize() const { return m_assumed_blockchain_size; }
@@ -136,6 +138,14 @@ public:
     };
 
     /**
+     * OpnetTestnetOptions holds configurations for creating an OPNet testnet CChainParams.
+     */
+    struct OpnetTestnetOptions {
+        std::optional<std::vector<uint8_t>> challenge{};
+        std::optional<std::vector<std::string>> seeds{};
+    };
+
+    /**
      * VersionBitsParameters holds activation parameters
      */
     struct VersionBitsParameters {
@@ -156,6 +166,7 @@ public:
 
     static std::unique_ptr<const CChainParams> RegTest(const RegTestOptions& options);
     static std::unique_ptr<const CChainParams> SigNet(const SigNetOptions& options);
+    static std::unique_ptr<const CChainParams> OpnetTestnet(const OpnetTestnetOptions& options);
     static std::unique_ptr<const CChainParams> Main();
     static std::unique_ptr<const CChainParams> TestNet();
     static std::unique_ptr<const CChainParams> TestNet4();

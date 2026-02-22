@@ -529,6 +529,123 @@ public:
 };
 
 /**
+ * OPNet Testnet: signature-gated test network based on BIP325 (signet).
+ * Independent chain with its own genesis block, magic bytes, ports, and data directory.
+ */
+class COpnetTestnetParams : public CChainParams {
+public:
+    explicit COpnetTestnetParams(const CChainParams::OpnetTestnetOptions& options)
+    {
+        std::vector<uint8_t> bin;
+        vFixedSeeds.clear();
+        vSeeds.clear();
+
+        if (!options.challenge) {
+            // TODO: Replace with the actual OPNet signing pubkey once available.
+            // This is a placeholder OP_TRUE challenge for initial development.
+            // To use a real key: bin = "<hex-encoded-challenge-script>"_hex_v_u8;
+            bin = {OP_TRUE};
+
+            consensus.nMinimumChainWork = uint256{};
+            consensus.defaultAssumeValid = uint256{};
+            m_assumed_blockchain_size = 0;
+            m_assumed_chain_state_size = 0;
+            chainTxData = ChainTxData{
+                0,
+                0,
+                0,
+            };
+            LogInfo("OPNet Testnet with default (OP_TRUE) challenge");
+        } else {
+            bin = *options.challenge;
+            consensus.nMinimumChainWork = uint256{};
+            consensus.defaultAssumeValid = uint256{};
+            m_assumed_blockchain_size = 0;
+            m_assumed_chain_state_size = 0;
+            chainTxData = ChainTxData{
+                0,
+                0,
+                0,
+            };
+            LogInfo("OPNet Testnet with challenge %s", HexStr(bin));
+        }
+
+        if (options.seeds) {
+            vSeeds = *options.seeds;
+        }
+
+        m_chain_type = ChainType::OPNET_TESTNET;
+        consensus.signet_blocks = true;
+        consensus.signet_challenge.assign(bin.begin(), bin.end());
+        consensus.nSubsidyHalvingInterval = 210000;
+        consensus.BIP34Height = 0;
+        consensus.BIP34Hash = uint256{};
+        consensus.BIP65Height = 0;
+        consensus.BIP66Height = 0;
+        consensus.CSVHeight = 0;
+        consensus.SegwitHeight = 0;
+        consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
+        consensus.nPowTargetSpacing = 10 * 60;
+        consensus.fPowAllowMinDifficultyBlocks = false;
+        consensus.enforce_BIP94 = false;
+        consensus.fPowNoRetargeting = false;
+        consensus.MinBIP9WarningHeight = 0;
+        consensus.powLimit = uint256{"00000377ae000000000000000000000000000000000000000000000000000000"};
+
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].threshold = 1815; // 90%
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].period = 2016;
+
+        // Activation of Taproot (BIPs 340-342) — always active from genesis
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].bit = 2;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].threshold = 1815; // 90%
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].period = 2016;
+
+        // Network magic: 0x4f504e54 (ASCII "OPNT")
+        pchMessageStart[0] = 0x4f;
+        pchMessageStart[1] = 0x50;
+        pchMessageStart[2] = 0x4e;
+        pchMessageStart[3] = 0x54;
+
+        nDefaultPort = 48337;
+        nPruneAfterHeight = 1000;
+
+        // TODO: Mine genesis block. Run with -opnet-testnet once with a temporary
+        // grinding loop enabled, capture the output, hardcode hash and nonce here,
+        // then remove the grinding loop.
+        // For now, using a unique timestamp and nTime. The nonce and hash assertions
+        // are commented out until the genesis is mined on target infrastructure.
+        genesis = CreateGenesisBlock(1740000000, 0, 0x1e0377ae, 1, 50 * COIN);
+        consensus.hashGenesisBlock = genesis.GetHash();
+        // genesis.nNonce = ???;
+        // assert(consensus.hashGenesisBlock == uint256{"???"});
+
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
+
+        bech32_hrp = "opt";
+
+        fDefaultConsistencyChecks = false;
+        m_is_mockable_chain = false;
+
+        // Copied from Signet.
+        m_headers_sync_params = HeadersSyncParams{
+            .commitment_period = 390,
+            .redownload_buffer_size = 9584,
+        };
+    }
+};
+
+/**
  * Regression test: intended for private networks only. Has minimal difficulty to ensure that
  * blocks can be found instantly.
  */
@@ -669,6 +786,11 @@ std::unique_ptr<const CChainParams> CChainParams::SigNet(const SigNetOptions& op
     return std::make_unique<const SigNetParams>(options);
 }
 
+std::unique_ptr<const CChainParams> CChainParams::OpnetTestnet(const OpnetTestnetOptions& options)
+{
+    return std::make_unique<const COpnetTestnetParams>(options);
+}
+
 std::unique_ptr<const CChainParams> CChainParams::RegTest(const RegTestOptions& options)
 {
     return std::make_unique<const CRegTestParams>(options);
@@ -707,6 +829,7 @@ std::optional<ChainType> GetNetworkForMagic(const MessageStartChars& message)
     const auto testnet4_msg = CChainParams::TestNet4()->MessageStart();
     const auto regtest_msg = CChainParams::RegTest({})->MessageStart();
     const auto signet_msg = CChainParams::SigNet({})->MessageStart();
+    const auto opnet_testnet_msg = CChainParams::OpnetTestnet({})->MessageStart();
 
     if (std::ranges::equal(message, mainnet_msg)) {
         return ChainType::MAIN;
@@ -718,6 +841,8 @@ std::optional<ChainType> GetNetworkForMagic(const MessageStartChars& message)
         return ChainType::REGTEST;
     } else if (std::ranges::equal(message, signet_msg)) {
         return ChainType::SIGNET;
+    } else if (std::ranges::equal(message, opnet_testnet_msg)) {
+        return ChainType::OPNET_TESTNET;
     }
     return std::nullopt;
 }

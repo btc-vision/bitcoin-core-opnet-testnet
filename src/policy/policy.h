@@ -70,7 +70,7 @@ static constexpr unsigned int DEFAULT_MIN_RELAY_TX_FEE{100};
 /** Maximum number of transactions per cluster (default) */
 static constexpr unsigned int DEFAULT_CLUSTER_LIMIT{64};
 /** Maximum size of cluster in virtual kilobytes */
-static constexpr unsigned int DEFAULT_CLUSTER_SIZE_LIMIT_KVB{101};
+static constexpr unsigned int DEFAULT_CLUSTER_SIZE_LIMIT_KVB{976};
 /** Default for -limitancestorcount, max number of in-mempool ancestors */
 static constexpr unsigned int DEFAULT_ANCESTOR_LIMIT{25};
 /** Default for -limitdescendantcount, max number of in-mempool descendants */

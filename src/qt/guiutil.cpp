@@ -118,6 +118,10 @@ static std::string DummyAddress(const CChainParams &params)
     case ChainType::TESTNET4:
         addr = "tb1p35yvjel7srp783ztf8v6jdra7dhfzk5jaun8xz2qp6ws7z80n4tqa6qnlg";
         break;
+    case ChainType::OPNET_TESTNET:
+        // OPNet testnet uses bech32 HRP "opt", provide a dummy P2TR address
+        addr = "opt1p35yvjel7srp783ztf8v6jdra7dhfzk5jaun8xz2qp6ws7z80n4tqxhsmpf";
+        break;
     case ChainType::REGTEST:
         addr = "bcrt1p35yvjel7srp783ztf8v6jdra7dhfzk5jaun8xz2qp6ws7z80n4tqsr2427";
         break;

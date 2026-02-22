@@ -52,6 +52,7 @@ static const int TOOLTIP_WRAP_THRESHOLD = 80;
 #define QAPP_APP_NAME_TESTNET "Bitcoin-Qt-testnet"
 #define QAPP_APP_NAME_TESTNET4 "Bitcoin-Qt-testnet4"
 #define QAPP_APP_NAME_SIGNET "Bitcoin-Qt-signet"
+#define QAPP_APP_NAME_OPNET_TESTNET "Bitcoin-Qt-opnet-testnet"
 #define QAPP_APP_NAME_REGTEST "Bitcoin-Qt-regtest"
 
 /* One gigabyte (GB) in bytes */

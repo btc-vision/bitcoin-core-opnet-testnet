@@ -78,6 +78,7 @@ static void SetupCliArgs(ArgsManager& argsman)
     const auto testnetBaseParams = CreateBaseChainParams(ChainType::TESTNET);
     const auto testnet4BaseParams = CreateBaseChainParams(ChainType::TESTNET4);
     const auto signetBaseParams = CreateBaseChainParams(ChainType::SIGNET);
+    const auto opnetTestnetBaseParams = CreateBaseChainParams(ChainType::OPNET_TESTNET);
     const auto regtestBaseParams = CreateBaseChainParams(ChainType::REGTEST);
 
     argsman.AddArg("-version", "Print version and exit", ArgsManager::ALLOW_ANY, OptionsCategory::OPTIONS);
@@ -432,6 +433,8 @@ private:
             return " testnet";
         case ChainType::SIGNET:
             return " signet";
+        case ChainType::OPNET_TESTNET:
+            return " opnet-testnet";
         case ChainType::REGTEST:
             return " regtest";
         case ChainType::MAIN:
