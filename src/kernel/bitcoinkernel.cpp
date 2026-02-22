@@ -804,6 +804,9 @@ btck_ChainParameters* btck_chain_parameters_create(const btck_ChainType chain_ty
     case btck_ChainType_REGTEST: {
         return btck_ChainParameters::ref(const_cast<CChainParams*>(CChainParams::RegTest({}).release()));
     }
+    case btck_ChainType_OPNET_TESTNET: {
+        return btck_ChainParameters::ref(const_cast<CChainParams*>(CChainParams::OpnetTestnet({}).release()));
+    }
     }
     assert(false);
 }

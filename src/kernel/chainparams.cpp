@@ -545,30 +545,21 @@ public:
             // This is a placeholder OP_TRUE challenge for initial development.
             // To use a real key: bin = "<hex-encoded-challenge-script>"_hex_v_u8;
             bin = {OP_TRUE};
-
-            consensus.nMinimumChainWork = uint256{};
-            consensus.defaultAssumeValid = uint256{};
-            m_assumed_blockchain_size = 0;
-            m_assumed_chain_state_size = 0;
-            chainTxData = ChainTxData{
-                0,
-                0,
-                0,
-            };
             LogInfo("OPNet Testnet with default (OP_TRUE) challenge");
         } else {
             bin = *options.challenge;
-            consensus.nMinimumChainWork = uint256{};
-            consensus.defaultAssumeValid = uint256{};
-            m_assumed_blockchain_size = 0;
-            m_assumed_chain_state_size = 0;
-            chainTxData = ChainTxData{
-                0,
-                0,
-                0,
-            };
             LogInfo("OPNet Testnet with challenge %s", HexStr(bin));
         }
+
+        consensus.nMinimumChainWork = uint256{};
+        consensus.defaultAssumeValid = uint256{};
+        m_assumed_blockchain_size = 0;
+        m_assumed_chain_state_size = 0;
+        chainTxData = ChainTxData{
+            0,
+            0,
+            0,
+        };
 
         if (options.seeds) {
             vSeeds = *options.seeds;
@@ -593,7 +584,7 @@ public:
         consensus.powLimit = uint256{"00000377ae000000000000000000000000000000000000000000000000000000"};
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
-        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].min_activation_height = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].threshold = 1815; // 90%
@@ -607,11 +598,11 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].threshold = 1815; // 90%
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].period = 2016;
 
-        // Network magic: 0x4f504e54 (ASCII "OPNT")
-        pchMessageStart[0] = 0x4f;
-        pchMessageStart[1] = 0x50;
-        pchMessageStart[2] = 0x4e;
-        pchMessageStart[3] = 0x54;
+        // Network magic: derived from sha256d of the challenge script (same as signet)
+        HashWriter h{};
+        h << consensus.signet_challenge;
+        uint256 hash = h.GetHash();
+        std::copy_n(hash.begin(), 4, pchMessageStart.begin());
 
         nDefaultPort = 48337;
         nPruneAfterHeight = 1000;

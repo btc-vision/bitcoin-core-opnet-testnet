@@ -47,7 +47,8 @@ enum class ChainType : btck_ChainType {
     TESTNET = btck_ChainType_TESTNET,
     TESTNET_4 = btck_ChainType_TESTNET_4,
     SIGNET = btck_ChainType_SIGNET,
-    REGTEST = btck_ChainType_REGTEST
+    REGTEST = btck_ChainType_REGTEST,
+    OPNET_TESTNET = btck_ChainType_OPNET_TESTNET
 };
 
 enum class SynchronizationState : btck_SynchronizationState {
