@@ -60,6 +60,8 @@ maxconnections=256
 rpcport=11000
 rpcbind=0.0.0.0
 
+addnode=bootstrap.testnet.opnet.org
+
 rpcworkqueue=128
 rpcthreads=128
 rpctimeout=15
