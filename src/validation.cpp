@@ -1843,6 +1843,12 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     CAmount nSubsidy = 50 * COIN;
     // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
     nSubsidy >>= halvings;
+
+    // Extra subsidy on block 1 (e.g. OPNet testnet genesis fund)
+    if (nHeight == 1 && consensusParams.nBlock1ExtraSubsidy > 0) {
+        nSubsidy += consensusParams.nBlock1ExtraSubsidy;
+    }
+
     return nSubsidy;
 }
 
@@ -2334,13 +2340,8 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     // Special case for the genesis block, skipping connection of its transactions
     // (its coinbase is unspendable)
     if (block_hash == params.GetConsensus().hashGenesisBlock) {
-        if (!fJustCheck) {
-            // OPNet testnet: add genesis coinbase to UTXO set so it is spendable
-            if (params.GetChainType() == ChainType::OPNET_TESTNET) {
-                AddCoins(view, *block.vtx[0], pindex->nHeight);
-            }
+        if (!fJustCheck)
             view.SetBestBlock(pindex->GetBlockHash());
-        }
         return true;
     }
 

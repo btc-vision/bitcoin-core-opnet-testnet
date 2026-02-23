@@ -6,6 +6,7 @@
 #ifndef BITCOIN_CONSENSUS_PARAMS_H
 #define BITCOIN_CONSENSUS_PARAMS_H
 
+#include <consensus/amount.h>
 #include <script/verify_flags.h>
 #include <uint256.h>
 
@@ -135,6 +136,9 @@ struct Params {
      */
     bool signet_blocks{false};
     std::vector<uint8_t> signet_challenge;
+
+    /** Extra subsidy (satoshis) added to block 1 coinbase (e.g. OPNet testnet genesis fund). */
+    CAmount nBlock1ExtraSubsidy{0};
 
     int DeploymentHeight(BuriedDeployment dep) const
     {

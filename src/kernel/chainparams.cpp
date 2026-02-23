@@ -570,6 +570,7 @@ public:
         consensus.signet_blocks = true;
         consensus.signet_challenge.assign(bin.begin(), bin.end());
         consensus.nSubsidyHalvingInterval = 210000;
+        consensus.nBlock1ExtraSubsidy = 50000 * COIN;
         consensus.BIP34Height = 0;
         consensus.BIP34Hash = uint256{};
         consensus.BIP65Height = 0;
