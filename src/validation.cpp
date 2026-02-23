@@ -2333,7 +2333,9 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
 
     // Special case for the genesis block, skipping connection of its transactions
     // (its coinbase is unspendable)
-    if (block_hash == params.GetConsensus().hashGenesisBlock) {
+    // OPNet testnet: allow genesis coinbase to be spendable
+    if (block_hash == params.GetConsensus().hashGenesisBlock &&
+        params.GetChainType() != ChainType::OPNET_TESTNET) {
         if (!fJustCheck)
             view.SetBestBlock(pindex->GetBlockHash());
         return true;
