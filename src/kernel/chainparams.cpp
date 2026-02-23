@@ -542,7 +542,7 @@ public:
 
         if (!options.challenge) {
             // Default challenge: PUSH33 <compressed_pubkey> OP_CHECKSIG
-            bin = "21036ff891bb731452f59af9179598e7379c56fd96da1329295daef792b0da04f87bac"_hex_v_u8;
+            bin = "2102075604ea57475d8e289f6f5466a164d32e720b82bcee48ef284c29a3bc02680cac"_hex_v_u8;
             LogInfo("OPNet Testnet with default challenge");
         } else {
             bin = *options.challenge;
@@ -608,10 +608,16 @@ public:
         nDefaultPort = 48337;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1740000000, 6737128, 0x1e0377ae, 1, 50 * COIN);
+        // Genesis coinbase pays 50 000 coins to P2TR address:
+        // opt1pe0slk2klsxckhf90hvu8g0688rxt9qts6thuxk3u4ymxeejw53gsna0ax2
+        const CScript opnetGenesisOutputScript = CScript() << OP_1 << "cbe1fb2adf81b16ba4afbb38743f4738ccb28170d2efc35a3ca9366ce64ea451"_hex;
+        genesis = CreateGenesisBlock(
+            "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks",
+            opnetGenesisOutputScript,
+            1740000000, 7459886, 0x1e0377ae, 1, 50000 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256{"0000012abdc31bae92b788839921edd2e53b6b340dad3f69ae14f63e963dd3c0"});
-        assert(genesis.hashMerkleRoot == uint256{"4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"});
+        assert(consensus.hashGenesisBlock == uint256{"0000017f85106b1feeaf2f70f1e2b805985bb575f88f9b0ba5753d2f3cf13273"});
+        assert(genesis.hashMerkleRoot == uint256{"a163d546788e0f168e0f13a2ecb0b3a0c94b0ff6258e9f3737ab501629456a52"});
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
