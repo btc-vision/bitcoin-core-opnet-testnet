@@ -18,6 +18,8 @@ Further information about Bitcoin Core is available in the [doc folder](/doc).
 
 Build
 ---------------------
+sudo apt-get install build-essential cmake pkgconf python3 libevent-dev libboost-dev libsqlite3-dev libcapnp-dev capnproto systemtap-sdt-dev libzmq3-dev
+
 cmake -B build -DBUILD_TESTING=OFF -DBUILD_BENCH=OFF -DWITH_BDB=OFF -DENABLE_WALLET=ON -DENABLE_IPC=OFF && cmake --build build -j$(nproc)
 
 License
