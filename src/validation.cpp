@@ -2333,11 +2333,14 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
 
     // Special case for the genesis block, skipping connection of its transactions
     // (its coinbase is unspendable)
-    // OPNet testnet: allow genesis coinbase to be spendable
-    if (block_hash == params.GetConsensus().hashGenesisBlock &&
-        params.GetChainType() != ChainType::OPNET_TESTNET) {
-        if (!fJustCheck)
+    if (block_hash == params.GetConsensus().hashGenesisBlock) {
+        if (!fJustCheck) {
+            // OPNet testnet: add genesis coinbase to UTXO set so it is spendable
+            if (params.GetChainType() == ChainType::OPNET_TESTNET) {
+                AddCoins(view, *block.vtx[0], pindex->nHeight);
+            }
             view.SetBestBlock(pindex->GetBlockHash());
+        }
         return true;
     }
 
