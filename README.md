@@ -68,7 +68,7 @@ rpcservertimeout=15
 
 Run:
 ```bash
-./build/bin/bitcoind --conf /path/to/your/conf
+./build/bin/bitcoind --conf=/path/to/your/conf
 ```
 
 License
