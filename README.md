@@ -15,6 +15,11 @@ interface, which can be optionally built.
 
 Further information about Bitcoin Core is available in the [doc folder](/doc).
 
+
+Build
+---------------------
+cmake -B build -DBUILD_TESTING=OFF -DBUILD_BENCH=OFF -DWITH_BDB=OFF -DENABLE_WALLET=ON -DENABLE_IPC=OFF && cmake --build build -j$(nproc)
+
 License
 -------
 
