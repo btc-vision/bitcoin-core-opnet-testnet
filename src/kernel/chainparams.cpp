@@ -549,6 +549,9 @@ public:
             LogInfo("OPNet Testnet with challenge %s", HexStr(bin));
         }
 
+        // DNS seed for peer discovery (regular A/AAAA record is sufficient)
+        vSeeds.emplace_back("dns.testnet.opnet.org.");
+
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
         m_assumed_blockchain_size = 0;

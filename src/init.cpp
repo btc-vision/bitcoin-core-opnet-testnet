@@ -2205,6 +2205,11 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
     connOptions.vSeedNodes = args.GetArgs("-seednode");
 
+    // Add default bootstrap peer for OPNet Testnet
+    if (chainparams.GetChainType() == ChainType::OPNET_TESTNET && connOptions.vSeedNodes.empty()) {
+        connOptions.vSeedNodes.emplace_back("bootstrap.testnet.opnet.org");
+    }
+
     const auto connect = args.GetArgs("-connect");
     if (!connect.empty() || args.IsArgNegated("-connect")) {
         // Do not initiate other outgoing connections when connecting to trusted
