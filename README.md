@@ -18,9 +18,58 @@ Further information about Bitcoin Core is available in the [doc folder](/doc).
 
 Build
 ---------------------
-sudo apt-get install build-essential cmake pkgconf python3 libevent-dev libboost-dev libsqlite3-dev libcapnp-dev capnproto systemtap-sdt-dev libzmq3-dev
+Intsall deps:
 
+```bash
+sudo apt-get install build-essential cmake pkgconf python3 libevent-dev libboost-dev libsqlite3-dev libcapnp-dev capnproto systemtap-sdt-dev libzmq3-dev
+```
+
+Build:
+```bash
 cmake -B build -DBUILD_TESTING=OFF -DBUILD_BENCH=OFF -DWITH_BDB=OFF -DENABLE_WALLET=ON -DENABLE_IPC=OFF && cmake --build build -j$(nproc)
+```
+
+Config:
+
+```conf
+rpcuser=yourrpc
+rpcpassword=yourpass
+opnet-testnet=1
+
+server=1
+daemon=0
+
+prune=0
+
+datadir=/path/to/your/datadir
+txindex=1
+
+acceptnonstdtxn=1
+printtoconsole=1
+allowignoredconf=1
+
+maxmempool=1000
+minrelaytxfee=0.000002
+blockmintxfee=0.000002
+mempoolexpiry=672
+maxmempool=4096
+
+maxconnections=256
+
+[opnet-testnet]
+rpcport=11000
+rpcbind=0.0.0.0
+
+rpcworkqueue=128
+rpcthreads=128
+rpctimeout=15
+rpcservertimeout=15
+```
+
+Run:
+```bash
+./build/bin/bitcoind --conf /path/to/your/conf
+```
 
 License
 -------
