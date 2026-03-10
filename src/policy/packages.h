@@ -21,13 +21,13 @@ static constexpr uint32_t MAX_PACKAGE_COUNT{25};
     to allow for context-less checks. This must allow a superset of sigops
     weighted vsize limited transactions to not disallow transactions we would
     have otherwise accepted individually. */
-static constexpr uint32_t MAX_PACKAGE_WEIGHT = 3904'000;
-static_assert(MAX_PACKAGE_WEIGHT >= MAX_STANDARD_TX_WEIGHT);
+static constexpr uint32_t DEFAULT_MAX_PACKAGE_WEIGHT = 3904'000;
+static_assert(DEFAULT_MAX_PACKAGE_WEIGHT >= DEFAULT_MAX_STANDARD_TX_WEIGHT);
 
 // Packages are part of a single cluster, so ensure that the package limits are
 // set within the mempool's cluster size limits.
 static_assert(DEFAULT_CLUSTER_LIMIT >= MAX_PACKAGE_COUNT);
-static_assert(MAX_PACKAGE_WEIGHT <= DEFAULT_CLUSTER_SIZE_LIMIT_KVB * WITNESS_SCALE_FACTOR * 1000);
+static_assert(DEFAULT_MAX_PACKAGE_WEIGHT <= DEFAULT_CLUSTER_SIZE_LIMIT_KVB * WITNESS_SCALE_FACTOR * 1000);
 
 /** A "reason" why a package was invalid. It may be that one or more of the included
  * transactions is invalid or the package itself violates our rules.
@@ -67,11 +67,11 @@ bool IsConsistentPackage(const Package& txns);
 
 /** Context-free package policy checks:
  * 1. The number of transactions cannot exceed MAX_PACKAGE_COUNT.
- * 2. The total weight cannot exceed MAX_PACKAGE_WEIGHT.
+ * 2. The total weight cannot exceed max_package_weight.
  * 3. If any dependencies exist between transactions, parents must appear before children.
  * 4. Transactions cannot conflict, i.e., spend the same inputs.
  */
-bool IsWellFormedPackage(const Package& txns, PackageValidationState& state);
+bool IsWellFormedPackage(const Package& txns, PackageValidationState& state, uint32_t max_package_weight = DEFAULT_MAX_PACKAGE_WEIGHT);
 
 /** Context-free check that a package is exactly one child and its parents; not all parents need to
  * be present, but the package must not contain any transactions that are not the child's parents.

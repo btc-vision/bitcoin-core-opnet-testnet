@@ -9,7 +9,7 @@ from decimal import Decimal
 import math
 
 from test_framework.test_framework import BitcoinTestFramework
-from test_framework.blocktools import MAX_STANDARD_TX_WEIGHT
+from test_framework.blocktools import DEFAULT_MAX_STANDARD_TX_WEIGHT
 from test_framework.mempool_util import (
     DEFAULT_MIN_RELAY_TX_FEE,
     DEFAULT_INCREMENTAL_RELAY_FEE,
@@ -373,15 +373,15 @@ class MempoolAcceptanceTest(BitcoinTestFramework):
         self.log.info("A transaction with an OP_RETURN output that bumps into the max standardness tx size.")
         tx = tx_from_hex(raw_tx_reference)
         tx.vout[0].scriptPubKey = CScript([OP_RETURN])
-        data_len = int(MAX_STANDARD_TX_WEIGHT / 4) - tx.get_vsize() - 5 - 4  # -5 for PUSHDATA4 and -4 for script size
+        data_len = int(DEFAULT_MAX_STANDARD_TX_WEIGHT / 4) - tx.get_vsize() - 5 - 4  # -5 for PUSHDATA4 and -4 for script size
         tx.vout[0].scriptPubKey = CScript([OP_RETURN, b"\xff" * (data_len)])
-        assert_equal(tx.get_vsize(), int(MAX_STANDARD_TX_WEIGHT / 4))
+        assert_equal(tx.get_vsize(), int(DEFAULT_MAX_STANDARD_TX_WEIGHT / 4))
         self.check_mempool_result(
             result_expected=[{"txid": tx.txid_hex, "allowed": True, "vsize": tx.get_vsize(), "fees": {"base": Decimal("0.1") - Decimal("0.05")}}],
             rawtxs=[tx.serialize().hex()],
         )
         tx.vout[0].scriptPubKey = CScript([OP_RETURN, b"\xff" * (data_len + 1)])
-        assert_greater_than(tx.get_vsize(), int(MAX_STANDARD_TX_WEIGHT / 4))
+        assert_greater_than(tx.get_vsize(), int(DEFAULT_MAX_STANDARD_TX_WEIGHT / 4))
         self.check_mempool_result(
             result_expected=[{"txid": tx.txid_hex, "allowed": False, "reject-reason": "tx-size"}],
             rawtxs=[tx.serialize().hex()],

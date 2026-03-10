@@ -76,7 +76,7 @@ bool IsConsistentPackage(const Package& txns)
     return true;
 }
 
-bool IsWellFormedPackage(const Package& txns, PackageValidationState& state)
+bool IsWellFormedPackage(const Package& txns, PackageValidationState& state, uint32_t max_package_weight)
 {
     const unsigned int package_count = txns.size();
 
@@ -87,7 +87,7 @@ bool IsWellFormedPackage(const Package& txns, PackageValidationState& state)
     const int64_t total_weight = std::accumulate(txns.cbegin(), txns.cend(), 0,
                                [](int64_t sum, const auto& tx) { return sum + GetTransactionWeight(*tx); });
     // If the package only contains 1 tx, it's better to report the policy violation on individual tx weight.
-    if (package_count > 1 && total_weight > MAX_PACKAGE_WEIGHT) {
+    if (package_count > 1 && total_weight > max_package_weight) {
         return state.Invalid(PackageValidationResult::PCKG_POLICY, "package-too-large");
     }
 

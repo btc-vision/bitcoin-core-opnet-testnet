@@ -670,14 +670,14 @@ BOOST_AUTO_TEST_CASE(too_large_orphan_tx)
     CMutableTransaction tx;
     tx.vin.resize(1);
 
-    // check that txs larger than MAX_STANDARD_TX_WEIGHT are not added to the orphanage
-    BulkTransaction(tx, MAX_STANDARD_TX_WEIGHT + 4);
-    BOOST_CHECK_EQUAL(GetTransactionWeight(CTransaction(tx)), MAX_STANDARD_TX_WEIGHT + 4);
+    // check that txs larger than DEFAULT_MAX_STANDARD_TX_WEIGHT are not added to the orphanage
+    BulkTransaction(tx, DEFAULT_MAX_STANDARD_TX_WEIGHT + 4);
+    BOOST_CHECK_EQUAL(GetTransactionWeight(CTransaction(tx)), DEFAULT_MAX_STANDARD_TX_WEIGHT + 4);
     BOOST_CHECK(!orphanage->AddTx(MakeTransactionRef(tx), 0));
 
     tx.vout.clear();
-    BulkTransaction(tx, MAX_STANDARD_TX_WEIGHT);
-    BOOST_CHECK_EQUAL(GetTransactionWeight(CTransaction(tx)), MAX_STANDARD_TX_WEIGHT);
+    BulkTransaction(tx, DEFAULT_MAX_STANDARD_TX_WEIGHT);
+    BOOST_CHECK_EQUAL(GetTransactionWeight(CTransaction(tx)), DEFAULT_MAX_STANDARD_TX_WEIGHT);
     BOOST_CHECK(orphanage->AddTx(MakeTransactionRef(tx), 0));
 }
 

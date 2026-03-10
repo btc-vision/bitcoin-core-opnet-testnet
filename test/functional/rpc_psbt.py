@@ -9,7 +9,7 @@ from itertools import product
 from random import randbytes
 
 from test_framework.blocktools import (
-    MAX_STANDARD_TX_WEIGHT,
+    DEFAULT_MAX_STANDARD_TX_WEIGHT,
 )
 from test_framework.descriptors import descsum_create
 from test_framework.key import H_POINT
@@ -413,9 +413,9 @@ class PSBTTest(BitcoinTestFramework):
         self.log.info("Test for invalid maximum transaction weights")
         dest_arg = [{self.nodes[0].getnewaddress(): 1}]
         min_tx_weight = MIN_STANDARD_TX_NONWITNESS_SIZE * WITNESS_SCALE_FACTOR
-        assert_raises_rpc_error(-4, f"Maximum transaction weight must be between {min_tx_weight} and {MAX_STANDARD_TX_WEIGHT}", self.nodes[0].walletcreatefundedpsbt, [], dest_arg, 0, {"max_tx_weight": -1})
-        assert_raises_rpc_error(-4, f"Maximum transaction weight must be between {min_tx_weight} and {MAX_STANDARD_TX_WEIGHT}", self.nodes[0].walletcreatefundedpsbt, [], dest_arg, 0, {"max_tx_weight": 0})
-        assert_raises_rpc_error(-4, f"Maximum transaction weight must be between {min_tx_weight} and {MAX_STANDARD_TX_WEIGHT}", self.nodes[0].walletcreatefundedpsbt, [], dest_arg, 0, {"max_tx_weight": MAX_STANDARD_TX_WEIGHT + 1})
+        assert_raises_rpc_error(-4, f"Maximum transaction weight must be between {min_tx_weight} and {DEFAULT_MAX_STANDARD_TX_WEIGHT}", self.nodes[0].walletcreatefundedpsbt, [], dest_arg, 0, {"max_tx_weight": -1})
+        assert_raises_rpc_error(-4, f"Maximum transaction weight must be between {min_tx_weight} and {DEFAULT_MAX_STANDARD_TX_WEIGHT}", self.nodes[0].walletcreatefundedpsbt, [], dest_arg, 0, {"max_tx_weight": 0})
+        assert_raises_rpc_error(-4, f"Maximum transaction weight must be between {min_tx_weight} and {DEFAULT_MAX_STANDARD_TX_WEIGHT}", self.nodes[0].walletcreatefundedpsbt, [], dest_arg, 0, {"max_tx_weight": DEFAULT_MAX_STANDARD_TX_WEIGHT + 1})
 
         # Base transaction vsize: version (4) + locktime (4) + input count (1) + witness overhead (1) = 10 vbytes
         base_tx_vsize = 10

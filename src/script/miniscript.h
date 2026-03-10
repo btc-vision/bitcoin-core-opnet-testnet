@@ -287,7 +287,7 @@ constexpr uint32_t MaxScriptSize(MiniscriptContext ms_ctx)
         // size conservatively be small enough such that even a maximum sized witness and a reasonably
         // sized spending transaction can spend an output paying to this script without running into
         // the maximum standard tx size limit.
-        constexpr auto max_size{MAX_STANDARD_TX_WEIGHT - TX_BODY_LEEWAY_WEIGHT - MAX_TAPSCRIPT_SAT_SIZE};
+        constexpr auto max_size{DEFAULT_MAX_STANDARD_TX_WEIGHT - TX_BODY_LEEWAY_WEIGHT - MAX_TAPSCRIPT_SAT_SIZE};
         return max_size - GetSizeOfCompactSize(max_size);
     }
     return MAX_STANDARD_P2WSH_SCRIPT_SIZE;

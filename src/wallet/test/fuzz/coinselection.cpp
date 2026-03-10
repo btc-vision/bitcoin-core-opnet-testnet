@@ -120,17 +120,17 @@ FUZZ_TARGET(coin_grinder)
     GroupCoins(fuzzed_data_provider, utxo_pool, coin_params, /*positive_only=*/true, group_pos);
 
     // Run coinselection algorithms
-    auto result_cg = CoinGrinder(group_pos, target, coin_params.m_min_change_target, MAX_STANDARD_TX_WEIGHT);
+    auto result_cg = CoinGrinder(group_pos, target, coin_params.m_min_change_target, DEFAULT_MAX_STANDARD_TX_WEIGHT);
     if (target + coin_params.m_min_change_target > max_spendable || HasErrorMsg(result_cg)) return; // We only need to compare algorithms if CoinGrinder has a solution
     assert(result_cg);
     if (!result_cg->GetAlgoCompleted()) return; // Bail out if CoinGrinder solution is not optimal
 
-    auto result_srd = SelectCoinsSRD(group_pos, target, coin_params.m_change_fee, fast_random_context, MAX_STANDARD_TX_WEIGHT);
+    auto result_srd = SelectCoinsSRD(group_pos, target, coin_params.m_change_fee, fast_random_context, DEFAULT_MAX_STANDARD_TX_WEIGHT);
     if (result_srd && result_srd->GetChange(CHANGE_LOWER, coin_params.m_change_fee) > 0) { // exclude any srd solutions that don’t have change, err on excluding
         assert(result_srd->GetWeight() >= result_cg->GetWeight());
     }
 
-    auto result_knapsack = KnapsackSolver(group_pos, target, coin_params.m_min_change_target, fast_random_context, MAX_STANDARD_TX_WEIGHT);
+    auto result_knapsack = KnapsackSolver(group_pos, target, coin_params.m_min_change_target, fast_random_context, DEFAULT_MAX_STANDARD_TX_WEIGHT);
     if (result_knapsack && result_knapsack->GetChange(CHANGE_LOWER, coin_params.m_change_fee) > 0) { // exclude any knapsack solutions that don’t have change, err on excluding
         assert(result_knapsack->GetWeight() >= result_cg->GetWeight());
     }

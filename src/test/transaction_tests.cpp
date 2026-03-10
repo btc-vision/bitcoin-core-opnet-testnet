@@ -765,12 +765,12 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
 
     constexpr auto CheckIsStandard = [](const auto& t, const unsigned int max_op_return_relay = MAX_OP_RETURN_RELAY) {
         std::string reason;
-        BOOST_CHECK(IsStandardTx(CTransaction{t}, max_op_return_relay, g_bare_multi, g_dust, reason));
+        BOOST_CHECK(IsStandardTx(CTransaction{t}, DEFAULT_MAX_STANDARD_TX_WEIGHT, max_op_return_relay, g_bare_multi, g_dust, reason));
         BOOST_CHECK(reason.empty());
     };
     constexpr auto CheckIsNotStandard = [](const auto& t, const std::string& reason_in, const unsigned int max_op_return_relay = MAX_OP_RETURN_RELAY) {
         std::string reason;
-        BOOST_CHECK(!IsStandardTx(CTransaction{t}, max_op_return_relay, g_bare_multi, g_dust, reason));
+        BOOST_CHECK(!IsStandardTx(CTransaction{t}, DEFAULT_MAX_STANDARD_TX_WEIGHT, max_op_return_relay, g_bare_multi, g_dust, reason));
         BOOST_CHECK_EQUAL(reason_in, reason);
     };
 
@@ -919,7 +919,7 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
         CheckIsStandard(t);
     }
 
-    // Check tx-size (non-standard if transaction weight is > MAX_STANDARD_TX_WEIGHT)
+    // Check tx-size (non-standard if transaction weight is > DEFAULT_MAX_STANDARD_TX_WEIGHT)
     t.vin.clear();
     t.vin.resize(2438); // size per input (empty scriptSig): 41 bytes
     t.vout[0].scriptPubKey = CScript() << OP_RETURN << std::vector<unsigned char>(19, 0); // output size: 30 bytes

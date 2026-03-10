@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(package_sanitization_tests)
     Package package_too_large;
     auto size_large = GetTransactionWeight(*large_ptx);
     size_t total_weight{0};
-    while (total_weight <= MAX_PACKAGE_WEIGHT) {
+    while (total_weight <= DEFAULT_MAX_PACKAGE_WEIGHT) {
         package_too_large.push_back(large_ptx);
         total_weight += size_large;
     }

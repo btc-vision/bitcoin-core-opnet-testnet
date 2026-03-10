@@ -96,7 +96,7 @@ bool IsStandard(const CScript& scriptPubKey, TxoutType& whichType)
     return true;
 }
 
-bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, const CFeeRate& dust_relay_fee, std::string& reason)
+bool IsStandardTx(const CTransaction& tx, int32_t max_tx_weight, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, const CFeeRate& dust_relay_fee, std::string& reason)
 {
     if (tx.version > TX_MAX_STANDARD_VERSION || tx.version < TX_MIN_STANDARD_VERSION) {
         reason = "version";
@@ -106,9 +106,9 @@ bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_dat
     // Extremely large transactions with lots of inputs can cost the network
     // almost as much to process as they cost the sender in fees, because
     // computing signature hashes is O(ninputs*txsize). Limiting transactions
-    // to MAX_STANDARD_TX_WEIGHT mitigates CPU exhaustion attacks.
+    // to max_tx_weight mitigates CPU exhaustion attacks.
     unsigned int sz = GetTransactionWeight(tx);
-    if (sz > MAX_STANDARD_TX_WEIGHT) {
+    if (sz > static_cast<unsigned int>(max_tx_weight)) {
         reason = "tx-size";
         return false;
     }

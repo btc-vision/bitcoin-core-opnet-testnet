@@ -96,7 +96,7 @@ static std::string InputAmountsToString(const SelectionResult& selection)
     return "[" + util::Join(selection.GetInputSet(), " ", [](const auto& input){ return util::ToString(input->txout.nValue);}) + "]";
 }
 
-static void TestBnBSuccess(std::string test_title, std::vector<OutputGroup>& utxo_pool, const CAmount& selection_target, const std::vector<CAmount>& expected_input_amounts, const CoinSelectionParams& cs_params = default_cs_params, const int custom_spending_vsize = P2WPKH_INPUT_VSIZE, const int max_selection_weight = MAX_STANDARD_TX_WEIGHT)
+static void TestBnBSuccess(std::string test_title, std::vector<OutputGroup>& utxo_pool, const CAmount& selection_target, const std::vector<CAmount>& expected_input_amounts, const CoinSelectionParams& cs_params = default_cs_params, const int custom_spending_vsize = P2WPKH_INPUT_VSIZE, const int max_selection_weight = DEFAULT_MAX_STANDARD_TX_WEIGHT)
 {
     SelectionResult expected_result(CAmount(0), SelectionAlgorithm::BNB);
     CAmount expected_amount = 0;
@@ -112,7 +112,7 @@ static void TestBnBSuccess(std::string test_title, std::vector<OutputGroup>& utx
     BOOST_CHECK_MESSAGE(result->GetSelectedValue() == expected_amount, strprintf("Selected amount mismatch in BnB-Success: %s. Expected %d, but got %d", test_title, expected_amount, result->GetSelectedValue()));
 }
 
-static void TestBnBFail(std::string test_title, std::vector<OutputGroup>& utxo_pool, const CAmount& selection_target, int max_selection_weight = MAX_STANDARD_TX_WEIGHT, const bool expect_max_weight_exceeded = false)
+static void TestBnBFail(std::string test_title, std::vector<OutputGroup>& utxo_pool, const CAmount& selection_target, int max_selection_weight = DEFAULT_MAX_STANDARD_TX_WEIGHT, const bool expect_max_weight_exceeded = false)
 {
     const auto result = SelectCoinsBnB(utxo_pool, selection_target, /*cost_of_change=*/default_cs_params.m_cost_of_change, max_selection_weight);
     BOOST_CHECK_MESSAGE(!result, "BnB-Fail: " + test_title);

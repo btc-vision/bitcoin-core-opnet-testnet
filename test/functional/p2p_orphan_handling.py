@@ -5,7 +5,7 @@
 
 import time
 
-from test_framework.blocktools import MAX_STANDARD_TX_WEIGHT
+from test_framework.blocktools import DEFAULT_MAX_STANDARD_TX_WEIGHT
 from test_framework.mempool_util import (
     create_large_orphan,
     tx_in_orphanage,
@@ -189,7 +189,7 @@ class OrphanHandlingTest(BitcoinTestFramework):
         peer2 = node.add_p2p_connection(PeerTxRelayer())
 
         self.log.info("Test orphan handling when a nonsegwit parent is known to be invalid")
-        parent_overly_large_nonsegwit = self.wallet_nonsegwit.create_self_transfer(target_vsize=int(MAX_STANDARD_TX_WEIGHT / 4) + 1)
+        parent_overly_large_nonsegwit = self.wallet_nonsegwit.create_self_transfer(target_vsize=int(DEFAULT_MAX_STANDARD_TX_WEIGHT / 4) + 1)
         assert_equal(parent_overly_large_nonsegwit["txid"], parent_overly_large_nonsegwit["tx"].wtxid_hex)
         parent_other = self.wallet_nonsegwit.create_self_transfer()
         child_nonsegwit = self.wallet_nonsegwit.create_self_transfer_multi(
@@ -392,7 +392,7 @@ class OrphanHandlingTest(BitcoinTestFramework):
         peer3 = node.add_p2p_connection(PeerTxRelayer(wtxidrelay=False))
 
         self.log.info("Test that an orphan with rejected parents, along with any descendants, cannot be retried with an alternate witness")
-        parent_overly_large_nonsegwit = self.wallet_nonsegwit.create_self_transfer(target_vsize=int(MAX_STANDARD_TX_WEIGHT / 4) + 1)
+        parent_overly_large_nonsegwit = self.wallet_nonsegwit.create_self_transfer(target_vsize=int(DEFAULT_MAX_STANDARD_TX_WEIGHT / 4) + 1)
         assert_equal(parent_overly_large_nonsegwit["txid"], parent_overly_large_nonsegwit["tx"].wtxid_hex)
         child = self.wallet.create_self_transfer(utxo_to_spend=parent_overly_large_nonsegwit["new_utxo"])
         grandchild = self.wallet.create_self_transfer(utxo_to_spend=child["new_utxo"])

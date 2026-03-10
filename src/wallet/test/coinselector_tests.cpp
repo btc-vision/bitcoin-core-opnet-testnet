@@ -83,13 +83,13 @@ static void add_coin(CoinsResult& available_coins, CWallet& wallet, const CAmoun
 std::optional<SelectionResult> KnapsackSolver(std::vector<OutputGroup>& groups, const CAmount& nTargetValue,
                                               CAmount change_target, FastRandomContext& rng)
 {
-    auto res{KnapsackSolver(groups, nTargetValue, change_target, rng, MAX_STANDARD_TX_WEIGHT)};
+    auto res{KnapsackSolver(groups, nTargetValue, change_target, rng, DEFAULT_MAX_STANDARD_TX_WEIGHT)};
     return res ? std::optional<SelectionResult>(*res) : std::nullopt;
 }
 
 std::optional<SelectionResult> SelectCoinsBnB(std::vector<OutputGroup>& utxo_pool, const CAmount& selection_target, const CAmount& cost_of_change)
 {
-    auto res{SelectCoinsBnB(utxo_pool, selection_target, cost_of_change, MAX_STANDARD_TX_WEIGHT)};
+    auto res{SelectCoinsBnB(utxo_pool, selection_target, cost_of_change, DEFAULT_MAX_STANDARD_TX_WEIGHT)};
     return res ? std::optional<SelectionResult>(*res) : std::nullopt;
 }
 
@@ -270,13 +270,13 @@ BOOST_AUTO_TEST_CASE(bnb_search_test)
         add_coin(available_coins, *wallet, 10 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
         add_coin(available_coins, *wallet, 9 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
         add_coin(available_coins, *wallet, 8 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
-        add_coin(available_coins, *wallet, 5 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true, /*custom_size=*/MAX_STANDARD_TX_WEIGHT);
+        add_coin(available_coins, *wallet, 5 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true, /*custom_size=*/DEFAULT_MAX_STANDARD_TX_WEIGHT);
         add_coin(available_coins, *wallet, 3 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
         add_coin(available_coins, *wallet, 1 * CENT, coin_selection_params_bnb.m_effective_feerate, 6 * 24, false, 0, true);
 
         CAmount selection_target = 16 * CENT;
         const auto& no_res = SelectCoinsBnB(GroupCoins(available_coins.All(), /*subtract_fee_outputs=*/true),
-                                            selection_target, /*cost_of_change=*/0, MAX_STANDARD_TX_WEIGHT);
+                                            selection_target, /*cost_of_change=*/0, DEFAULT_MAX_STANDARD_TX_WEIGHT);
         BOOST_REQUIRE(!no_res);
         BOOST_CHECK(util::ErrorString(no_res).original.find("The inputs size exceeds the maximum weight") != std::string::npos);
 
@@ -1283,7 +1283,7 @@ static util::Result<SelectionResult> select_coins(const CAmount& target, const C
     auto result = SelectCoins(*wallet, available_coins, /*pre_set_inputs=*/ {}, target, cc, cs_params);
     if (result) {
         const auto signedTxSize = 10 + 34 + 68 * result->GetInputSet().size(); // static header size + output size + inputs size (P2WPKH)
-        BOOST_CHECK_LE(signedTxSize * WITNESS_SCALE_FACTOR, MAX_STANDARD_TX_WEIGHT);
+        BOOST_CHECK_LE(signedTxSize * WITNESS_SCALE_FACTOR, DEFAULT_MAX_STANDARD_TX_WEIGHT);
 
         BOOST_CHECK_GE(result->GetSelectedValue(), target);
     }
@@ -1313,7 +1313,7 @@ BOOST_AUTO_TEST_CASE(check_max_selection_weight)
         /*avoid_partial=*/false,
     };
 
-    int max_weight = MAX_STANDARD_TX_WEIGHT - WITNESS_SCALE_FACTOR * (cs_params.tx_noinputs_size + cs_params.change_output_size);
+    int max_weight = DEFAULT_MAX_STANDARD_TX_WEIGHT - WITNESS_SCALE_FACTOR * (cs_params.tx_noinputs_size + cs_params.change_output_size);
     {
         // Scenario 1:
         // The actor starts with 1x 50.0 BTC and 1515x 0.033 BTC (~100.0 BTC total) unspent outputs
@@ -1385,7 +1385,7 @@ BOOST_AUTO_TEST_CASE(check_max_selection_weight)
 
         // No results
         // 1515 inputs * 68 bytes = 103,020 bytes
-        // 103,020 bytes * 4 = 412,080 weight, which is above the MAX_STANDARD_TX_WEIGHT of 400,000
+        // 103,020 bytes * 4 = 412,080 weight, which is above the DEFAULT_MAX_STANDARD_TX_WEIGHT of 400,000
         BOOST_CHECK(!result);
     }
 }

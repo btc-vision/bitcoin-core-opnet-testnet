@@ -50,6 +50,10 @@ struct MemPoolOptions {
      * Maximum size of TxoutType::NULL_DATA scripts that this node considers standard.
      * If nullopt, any size is nonstandard.
      */
+    /** Maximum weight for transactions we're willing to relay/mine (configurable via -maxstandardtxweight) */
+    int32_t max_standard_tx_weight{DEFAULT_MAX_STANDARD_TX_WEIGHT};
+    /** Maximum total weight for packages; auto-bumped to be >= max_standard_tx_weight */
+    uint32_t max_package_weight{DEFAULT_MAX_STANDARD_TX_WEIGHT + 4'000};
     std::optional<unsigned> max_datacarrier_bytes{DEFAULT_ACCEPT_DATACARRIER ? std::optional{MAX_OP_RETURN_RELAY} : std::nullopt};
     bool permit_bare_multisig{DEFAULT_PERMIT_BAREMULTISIG};
     bool require_standard{true};

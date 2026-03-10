@@ -33,8 +33,8 @@ static constexpr unsigned int DEFAULT_COINBASE_OUTPUT_MAX_ADDITIONAL_SIGOPS{400}
 static constexpr unsigned int MINIMUM_BLOCK_RESERVED_WEIGHT{2000};
 /** Default for -blockmintxfee, which sets the minimum feerate for a transaction in blocks created by mining code **/
 static constexpr unsigned int DEFAULT_BLOCK_MIN_TX_FEE{1};
-/** The maximum weight for transactions we're willing to relay/mine */
-static constexpr int32_t MAX_STANDARD_TX_WEIGHT{3900000};
+/** Default maximum weight for transactions we're willing to relay/mine */
+static constexpr int32_t DEFAULT_MAX_STANDARD_TX_WEIGHT{3900000};
 /** The minimum non-witness size for transactions we're willing to relay/mine: one larger than 64  */
 static constexpr unsigned int MIN_STANDARD_TX_NONWITNESS_SIZE{65};
 /** Maximum number of signature check operations in an IsStandard() P2SH script */
@@ -80,7 +80,7 @@ static const bool DEFAULT_ACCEPT_DATACARRIER = true;
 /**
  * Default setting for -datacarriersize in vbytes.
  */
-static const unsigned int MAX_OP_RETURN_RELAY = MAX_STANDARD_TX_WEIGHT / WITNESS_SCALE_FACTOR;
+static const unsigned int MAX_OP_RETURN_RELAY = DEFAULT_MAX_STANDARD_TX_WEIGHT / WITNESS_SCALE_FACTOR;
 /**
  * An extra transaction can be added to a package, as long as it only has one
  * ancestor and is no larger than this. Not really any reason to make this
@@ -155,7 +155,7 @@ static constexpr decltype(CTransaction::version) TX_MAX_STANDARD_VERSION{3};
 * Check for standard transaction types
 * @return True if all outputs (scriptPubKeys) use only standard transaction forms
 */
-bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, const CFeeRate& dust_relay_fee, std::string& reason);
+bool IsStandardTx(const CTransaction& tx, int32_t max_tx_weight, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, const CFeeRate& dust_relay_fee, std::string& reason);
 /**
 * Check for standard transaction types
 * @param[in] mapInputs       Map of previous transactions that have outputs we're spending

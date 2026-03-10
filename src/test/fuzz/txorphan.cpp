@@ -134,7 +134,7 @@ FUZZ_TARGET(txorphan, .init = initialize_orphanage)
                         // After AddTx, the orphanage may trim itself, so the peer's usage may have gone up or down.
 
                         if (add_tx) {
-                            Assert(tx_weight <= MAX_STANDARD_TX_WEIGHT);
+                            Assert(tx_weight <= DEFAULT_MAX_STANDARD_TX_WEIGHT);
                         } else {
                             // Peer may have been added as an announcer.
                             if (orphanage->UsageByPeer(peer_id) > total_peer_bytes_start) {
@@ -462,7 +462,7 @@ FUZZ_TARGET(txorphanage_sim)
         txn[txorder[t]] = MakeTransactionRef(std::move(tx));
         wtxids.insert(txn[txorder[t]]->GetWitnessHash());
         auto weight = GetTransactionWeight(*txn[txorder[t]]);
-        assert(weight < MAX_STANDARD_TX_WEIGHT);
+        assert(weight < DEFAULT_MAX_STANDARD_TX_WEIGHT);
         total_usage += GetTransactionWeight(*txn[txorder[t]]);
     }
 

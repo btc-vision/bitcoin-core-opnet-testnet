@@ -10,7 +10,7 @@ from decimal import Decimal
 import random
 import time
 
-from test_framework.blocktools import MAX_STANDARD_TX_WEIGHT
+from test_framework.blocktools import DEFAULT_MAX_STANDARD_TX_WEIGHT
 from test_framework.mempool_util import (
     create_large_orphan,
     DEFAULT_MIN_RELAY_TX_FEE,
@@ -439,7 +439,7 @@ class PackageRelayTest(BitcoinTestFramework):
         # Check to make sure these are orphans, within max standard size (to be accepted into the orphanage)
         for large_orphan in large_orphans:
             assert_greater_than_or_equal(100000, large_orphan.get_vsize())
-            assert_greater_than(MAX_STANDARD_TX_WEIGHT, large_orphan.get_weight())
+            assert_greater_than(DEFAULT_MAX_STANDARD_TX_WEIGHT, large_orphan.get_weight())
             assert_greater_than_or_equal(3 * large_orphan.get_vsize(), 2 * 100000)
             testres = node.testmempoolaccept([large_orphan.serialize().hex()])
             assert not testres[0]["allowed"]

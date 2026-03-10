@@ -19,6 +19,7 @@
 #include <util/moneystr.h>
 #include <util/translation.h>
 
+#include <algorithm>
 #include <chrono>
 #include <memory>
 
@@ -90,6 +91,13 @@ util::Result<void> ApplyArgsManOptions(const ArgsManager& argsman, const CChainP
         }
     }
 
+    if (auto max_tx_weight = argsman.GetIntArg("-maxstandardtxweight")) {
+        if (*max_tx_weight < 1 || *max_tx_weight > MAX_BLOCK_WEIGHT) {
+            return util::Error{Untranslated(strprintf("-maxstandardtxweight must be between 1 and %d", MAX_BLOCK_WEIGHT))};
+        }
+        mempool_opts.max_standard_tx_weight = static_cast<int32_t>(*max_tx_weight);
+    }
+
     mempool_opts.permit_bare_multisig = argsman.GetBoolArg("-permitbaremultisig", DEFAULT_PERMIT_BAREMULTISIG);
 
     if (argsman.GetBoolArg("-datacarrier", DEFAULT_ACCEPT_DATACARRIER)) {
@@ -109,6 +117,14 @@ util::Result<void> ApplyArgsManOptions(const ArgsManager& argsman, const CChainP
 
     if (mempool_opts.limits.cluster_count > MAX_CLUSTER_COUNT_LIMIT) {
         return util::Error{Untranslated(strprintf("limitclustercount must be less than or equal to %d", MAX_CLUSTER_COUNT_LIMIT))};
+    }
+
+    // Ensure max_package_weight >= max_standard_tx_weight (with a small margin for package overhead).
+    // Also ensure it doesn't exceed the cluster size limit.
+    {
+        const uint32_t min_package_weight = static_cast<uint32_t>(mempool_opts.max_standard_tx_weight) + 4'000;
+        const uint32_t max_cluster_weight = static_cast<uint32_t>(mempool_opts.limits.cluster_size_vbytes) * WITNESS_SCALE_FACTOR;
+        mempool_opts.max_package_weight = std::min(min_package_weight, max_cluster_weight);
     }
 
     return {};

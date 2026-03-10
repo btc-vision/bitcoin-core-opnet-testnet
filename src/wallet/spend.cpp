@@ -740,7 +740,7 @@ util::Result<SelectionResult> ChooseSelectionResult(interfaces::Chain& chain, co
     };
 
     // Maximum allowed weight for selected coins.
-    int max_transaction_weight = coin_selection_params.m_max_tx_weight.value_or(MAX_STANDARD_TX_WEIGHT);
+    int max_transaction_weight = coin_selection_params.m_max_tx_weight.value_or(DEFAULT_MAX_STANDARD_TX_WEIGHT);
     int tx_weight_no_input = coin_selection_params.tx_noinputs_size * WITNESS_SCALE_FACTOR;
     int max_selection_weight = max_transaction_weight - tx_weight_no_input;
     if (max_selection_weight <= 0) {
@@ -860,7 +860,7 @@ util::Result<SelectionResult> SelectCoins(const CWallet& wallet, CoinsResult& av
                                                 coin_selection_params.m_change_fee);
 
         // Verify we haven't exceeded the maximum allowed weight
-        int max_inputs_weight = coin_selection_params.m_max_tx_weight.value_or(MAX_STANDARD_TX_WEIGHT) - (coin_selection_params.tx_noinputs_size * WITNESS_SCALE_FACTOR);
+        int max_inputs_weight = coin_selection_params.m_max_tx_weight.value_or(DEFAULT_MAX_STANDARD_TX_WEIGHT) - (coin_selection_params.tx_noinputs_size * WITNESS_SCALE_FACTOR);
         if (op_selection_result->GetWeight() > max_inputs_weight) {
             return util::Error{_("The combination of the pre-selected inputs and the wallet automatic inputs selection exceeds the transaction maximum weight. "
                                  "Please try sending a smaller amount or manually consolidating your wallet's UTXOs")};
@@ -1071,11 +1071,11 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     CoinSelectionParams coin_selection_params{rng_fast}; // Parameters for coin selection, init with dummy
     coin_selection_params.m_avoid_partial_spends = coin_control.m_avoid_partial_spends;
     coin_selection_params.m_include_unsafe_inputs = coin_control.m_include_unsafe_inputs;
-    coin_selection_params.m_max_tx_weight = coin_control.m_max_tx_weight.value_or(MAX_STANDARD_TX_WEIGHT);
+    coin_selection_params.m_max_tx_weight = coin_control.m_max_tx_weight.value_or(DEFAULT_MAX_STANDARD_TX_WEIGHT);
     coin_selection_params.m_version = coin_control.m_version;
     int minimum_tx_weight = MIN_STANDARD_TX_NONWITNESS_SIZE * WITNESS_SCALE_FACTOR;
-    if (coin_selection_params.m_max_tx_weight.value() < minimum_tx_weight || coin_selection_params.m_max_tx_weight.value() > MAX_STANDARD_TX_WEIGHT) {
-        return util::Error{strprintf(_("Maximum transaction weight must be between %d and %d"), minimum_tx_weight, MAX_STANDARD_TX_WEIGHT)};
+    if (coin_selection_params.m_max_tx_weight.value() < minimum_tx_weight || coin_selection_params.m_max_tx_weight.value() > DEFAULT_MAX_STANDARD_TX_WEIGHT) {
+        return util::Error{strprintf(_("Maximum transaction weight must be between %d and %d"), minimum_tx_weight, DEFAULT_MAX_STANDARD_TX_WEIGHT)};
     }
     // Set the long term feerate estimate to the wallet's consolidate feerate
     coin_selection_params.m_long_term_feerate = wallet.m_consolidate_feerate;
@@ -1397,8 +1397,8 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     CTransactionRef tx = MakeTransactionRef(std::move(txNew));
 
     // Limit size
-    if ((sign && GetTransactionWeight(*tx) > MAX_STANDARD_TX_WEIGHT) ||
-        (!sign && tx_sizes.weight > MAX_STANDARD_TX_WEIGHT))
+    if ((sign && GetTransactionWeight(*tx) > DEFAULT_MAX_STANDARD_TX_WEIGHT) ||
+        (!sign && tx_sizes.weight > DEFAULT_MAX_STANDARD_TX_WEIGHT))
     {
         return util::Error{_("Transaction too large")};
     }

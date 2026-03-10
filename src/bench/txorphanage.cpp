@@ -65,8 +65,8 @@ static void OrphanageSinglePeerEviction(benchmark::Bench& bench)
     for (unsigned int i{0}; i < NUM_TINY_TRANSACTIONS; ++i) {
         tiny_txs.emplace_back(MakeTransactionBulkedTo(1, TINY_TX_WEIGHT, det_rand));
     }
-    auto large_tx = MakeTransactionBulkedTo(1, MAX_STANDARD_TX_WEIGHT, det_rand);
-    assert(GetTransactionWeight(*large_tx) <= MAX_STANDARD_TX_WEIGHT);
+    auto large_tx = MakeTransactionBulkedTo(1, DEFAULT_MAX_STANDARD_TX_WEIGHT, det_rand);
+    assert(GetTransactionWeight(*large_tx) <= DEFAULT_MAX_STANDARD_TX_WEIGHT);
 
     const auto orphanage{node::MakeTxOrphanage(/*max_global_latency_score=*/node::DEFAULT_MAX_ORPHANAGE_LATENCY_SCORE, /*reserved_peer_usage=*/node::DEFAULT_RESERVED_ORPHAN_WEIGHT_PER_PEER)};
 
@@ -104,7 +104,7 @@ static void OrphanageSinglePeerEviction(benchmark::Bench& bench)
 
         // The number of evictions is the same regardless of the number of peers. In both cases, we can exceed the
         // usage limit using 1 maximally-sized transaction.
-        assert(num_evicted == MAX_STANDARD_TX_WEIGHT / TINY_TX_WEIGHT);
+        assert(num_evicted == DEFAULT_MAX_STANDARD_TX_WEIGHT / TINY_TX_WEIGHT);
     });
 }
 static void OrphanageMultiPeerEviction(benchmark::Bench& bench)
@@ -118,7 +118,7 @@ static void OrphanageMultiPeerEviction(benchmark::Bench& bench)
     static constexpr node::TxOrphanage::Usage LARGE_TX_WEIGHT{TOTAL_USAGE_LIMIT / NUM_UNIQUE_TXNS - 4};
     static_assert(LARGE_TX_WEIGHT >= TINY_TX_WEIGHT * 2, "Tx is too small, increase NUM_PEERS");
     // The orphanage does not permit any transactions larger than 400'000, so this test will not work if the large tx is much larger.
-    static_assert(LARGE_TX_WEIGHT <= MAX_STANDARD_TX_WEIGHT, "Tx is too large, decrease NUM_PEERS");
+    static_assert(LARGE_TX_WEIGHT <= DEFAULT_MAX_STANDARD_TX_WEIGHT, "Tx is too large, decrease NUM_PEERS");
 
     FastRandomContext det_rand{true};
     // Construct large transactions
@@ -216,10 +216,10 @@ static void OrphanageEraseAll(benchmark::Bench& bench, bool block_or_disconnect)
             const unsigned int start_input = peer * INPUTS_PER_PEER + txnum * 7;
 
             // Note that we shouldn't be able to hit the weight limit with these small transactions.
-            const int64_t weight_limit{std::min<int64_t>(weight_left_for_peer, MAX_STANDARD_TX_WEIGHT)};
+            const int64_t weight_limit{std::min<int64_t>(weight_left_for_peer, DEFAULT_MAX_STANDARD_TX_WEIGHT)};
             auto ptx = MakeTransactionSpendingUpTo(block_tx->vin, /*start_input=*/start_input, /*num_inputs=*/INPUTS_PER_TX, /*weight_limit=*/weight_limit);
 
-            assert(GetTransactionWeight(*ptx) <= MAX_STANDARD_TX_WEIGHT);
+            assert(GetTransactionWeight(*ptx) <= DEFAULT_MAX_STANDARD_TX_WEIGHT);
             assert(!orphanage->HaveTx(ptx->GetWitnessHash()));
             assert(orphanage->AddTx(ptx, peer));
 
