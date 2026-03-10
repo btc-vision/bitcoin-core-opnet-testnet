@@ -119,9 +119,12 @@ util::Result<void> ApplyArgsManOptions(const ArgsManager& argsman, const CChainP
         return util::Error{Untranslated(strprintf("limitclustercount must be less than or equal to %d", MAX_CLUSTER_COUNT_LIMIT))};
     }
 
-    // Ensure max_package_weight >= max_standard_tx_weight (with a small margin for package overhead).
-    // Also ensure it doesn't exceed the cluster size limit.
+    // Auto-bump cluster size and package weight to accommodate configured max tx weight.
     {
+        const int64_t min_cluster_vbytes = (static_cast<int64_t>(mempool_opts.max_standard_tx_weight) + WITNESS_SCALE_FACTOR - 1) / WITNESS_SCALE_FACTOR;
+        if (mempool_opts.limits.cluster_size_vbytes < min_cluster_vbytes) {
+            mempool_opts.limits.cluster_size_vbytes = min_cluster_vbytes;
+        }
         const uint32_t min_package_weight = static_cast<uint32_t>(mempool_opts.max_standard_tx_weight) + 4'000;
         const uint32_t max_cluster_weight = static_cast<uint32_t>(mempool_opts.limits.cluster_size_vbytes) * WITNESS_SCALE_FACTOR;
         mempool_opts.max_package_weight = std::min(min_package_weight, max_cluster_weight);
